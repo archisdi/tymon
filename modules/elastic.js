@@ -2,12 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const elasticsearch = require("elasticsearch");
 let instance;
-const initialize = (input) => {
+const initialize = ({ connection_string }) => {
     if (!instance) {
         instance = new elasticsearch.Client({
-            hosts: [
-                `${input.protocol}://${input.username}:${input.password}@${input.host}:${input.port}/`
-            ]
+            hosts: [String(connection_string)]
         });
     }
 };

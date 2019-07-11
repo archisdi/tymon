@@ -1,21 +1,15 @@
 import * as elasticsearch from 'elasticsearch';
 
 interface IElasticInput {
-    protocol: string,
-    username: string,
-    password: string,
-    host: string;
-    port: number;
+    connection_string: string;
 }
 
 let instance: any;
 
-const initialize = (input: IElasticInput): void => {
+const initialize = ({ connection_string }: IElasticInput): void => {
     if (!instance) {
         instance = new elasticsearch.Client({
-            hosts: [
-                `${input.protocol}://${input.username}:${input.password}@${input.host}:${input.port}/`
-            ]
+            hosts: [String(connection_string)]
         });
     }
 };

@@ -1,12 +1,8 @@
 interface IElasticInput {
-    protocol: string;
-    username: string;
-    password: string;
-    host: string;
-    port: number;
+    connection_string: string;
 }
 declare const _default: {
-    initialize: (input: IElasticInput) => void;
+    initialize: ({ connection_string }: IElasticInput) => void;
     getInstance: () => any;
 };
 export default _default;
