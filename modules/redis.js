@@ -1,12 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const redis = require("redis");
-const bluebird_1 = require("bluebird");
-bluebird_1.promisifyAll(redis);
+const Redis = require("ioredis");
 let instance;
-const initialize = (input) => {
+const initialize = ({ connection_string }) => {
     if (!instance) {
-        instance = redis.createClient(Number(input.port), String(input.host));
+        instance = new Redis(connection_string);
     }
 };
 const getInstance = () => {
