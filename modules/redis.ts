@@ -1,18 +1,14 @@
-import * as redis from 'redis';
-import { promisifyAll } from 'bluebird';
-
-promisifyAll(redis);
+import * as Redis from 'ioredis';
 
 interface IRedisInput {
-    host: string;
-    port: number;
+    connection_string: string;
 }
 
 let instance: any;
 
-const initialize = (input: IRedisInput): void => {
+const initialize = ({ connection_string }: IRedisInput): void => {
     if (!instance) {
-        instance = redis.createClient(Number(input.port), String(input.host));
+        instance = new Redis(connection_string);
     }
 };
 
