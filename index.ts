@@ -1,11 +1,15 @@
 import HttpError from './modules/http_error';
-import Firebase from './modules/firebase';
-import Redis from './modules/redis';
-import Elastic from './modules/elastic';
+import FirebaseContext from './modules/firebase';
+import RedisContext from './modules/redis';
+import ElasticContext from './modules/elastic';
+import DBContext from './modules/db';
+import MongoContext from './modules/mongodb';
 
 export {
     HttpError,
-    Firebase,
-    Redis,
-    Elastic
+    FirebaseContext,
+    RedisContext,
+    ElasticContext,
+    DBContext,
+    MongoContext
 };
