@@ -29,7 +29,11 @@ exports.initialize = ({ connection_string, models_path }) => __awaiter(this, voi
     const sequelize = new sequelize_1.Sequelize(connection_string, options);
     const modelsDir = path.join(__dirname, '../../..', models_path);
     fs.readdirSync(modelsDir)
-        .filter((file) => (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js'))
+        .filter((file) => {
+        const fileExtension = file.slice(-3);
+        const isEligible = (fileExtension === '.js' || fileExtension === '.ts');
+        return (file.indexOf('.') !== 0) && isEligible;
+    })
         .forEach((file) => {
         const model = sequelize.import(path.join(modelsDir, file));
         models[model.name] = model;

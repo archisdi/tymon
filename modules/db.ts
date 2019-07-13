@@ -31,7 +31,11 @@ export const initialize = async ({ connection_string, models_path }: IDbInput): 
 
     const modelsDir = path.join(__dirname, '../../..', models_path);
     fs.readdirSync(modelsDir)
-        .filter((file) => (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js'))
+        .filter((file) => {
+            const fileExtension: string = file.slice(-3);
+            const isEligible: boolean = (fileExtension === '.js' || fileExtension === '.ts');
+            return (file.indexOf('.') !== 0) && isEligible;
+        })
         .forEach((file) => {
             const model = sequelize.import(path.join(modelsDir, file));
             models[model.name] = model;
