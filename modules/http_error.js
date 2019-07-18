@@ -22,7 +22,15 @@ class CustomError extends Error {
 const HttpError = {};
 const initialize = () => {
     errors.forEach((e) => {
-        HttpError[e.name] = (userMessage) => new CustomError(e.message, userMessage, e.statusCode);
+        HttpError[e.name] = (errDetail) => {
+            if (errDetail instanceof Object) {
+                return new CustomError(e.message, errDetail, e.statusCode);
+            }
+            else {
+                const message = String(errDetail || 'WHOOPS');
+                return new CustomError(e.message, { type: message }, e.statusCode);
+            }
+        };
     });
 };
 HttpError.initialize = initialize;

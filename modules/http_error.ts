@@ -1,9 +1,15 @@
 import * as Err from 'http-status-codes';
 
-interface IErrorDetail {
+interface IError {
     name: string;
     statusCode: number;
     message: string;
+}
+
+interface IErrorDetail {
+    type: string;
+    data?: object | null;
+    desc?: string;
 }
 
 const errors = [
@@ -19,9 +25,9 @@ const errors = [
 class CustomError extends Error {
     public status: number;
     public message: string;
-    public detail: string | null;
+    public detail: object | null;
 
-    constructor(message: string, detail: string | null, status: number) {
+    constructor(message: string, detail: IErrorDetail | null, status: number) {
         super(message);
         this.message = message;
         this.status = status;
@@ -33,8 +39,15 @@ class CustomError extends Error {
 const HttpError: any = {};
 
 const initialize = () => {
-    errors.forEach((e: IErrorDetail) => {
-        HttpError[e.name] = (userMessage: string | null) => new CustomError(e.message, userMessage, e.statusCode);
+    errors.forEach((e: IError) => {
+        HttpError[e.name] = (errDetail: string | IErrorDetail | null) => {
+            if (errDetail instanceof Object) {
+                return new CustomError(e.message, errDetail, e.statusCode);
+            } else {
+                const message: string = String(errDetail || 'WHOOPS');
+                return new CustomError(e.message, { type: message }, e.statusCode);
+            }
+        };
     });
 };
 
