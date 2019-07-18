@@ -11,26 +11,24 @@ const errors = [
     { name: 'InternalServerError', statusCode: Err.INTERNAL_SERVER_ERROR, message: 'Internal Server Error' }
 ];
 class CustomError extends Error {
-    constructor(message, detail, status) {
+    constructor({ message, name, status, data }) {
         super(message);
         this.message = message;
         this.status = status;
-        this.detail = detail;
+        this.name = name;
+        this.data = data ? data : undefined;
     }
 }
 // tslint:disable-next-line
 const HttpError = {};
 const initialize = () => {
     errors.forEach((e) => {
-        HttpError[e.name] = (errDetail) => {
-            if (errDetail instanceof Object) {
-                return new CustomError(e.message, errDetail, e.statusCode);
-            }
-            else {
-                const message = String(errDetail || 'WHOOPS');
-                return new CustomError(e.message, { type: message }, e.statusCode);
-            }
-        };
+        HttpError[e.name] = (message, name = 'WHOOPS', data) => new CustomError({
+            name,
+            message: `${e.message}${message ? `, ${message}` : ''}`,
+            status: e.statusCode,
+            data
+        });
     });
 };
 HttpError.initialize = initialize;

@@ -1,15 +1,16 @@
 import * as Err from 'http-status-codes';
 
-interface IError {
+interface IHttpError {
     name: string;
     statusCode: number;
     message: string;
 }
 
-interface IErrorDetail {
-    type: string;
-    data?: object | null;
-    desc?: string;
+interface ICustomError {
+    message: string;
+    name: string;
+    status: number;
+    data?: object | null | undefined;
 }
 
 const errors = [
@@ -23,15 +24,17 @@ const errors = [
 ];
 
 class CustomError extends Error {
-    public status: number;
     public message: string;
-    public detail: object | null;
+    public status: number;
+    public name: string;
+    public data: object | undefined;
 
-    constructor(message: string, detail: IErrorDetail | null, status: number) {
+    constructor({ message, name, status, data }: ICustomError) {
         super(message);
         this.message = message;
         this.status = status;
-        this.detail = detail;
+        this.name = name;
+        this.data = data ? data : undefined;
     }
 }
 
@@ -39,15 +42,14 @@ class CustomError extends Error {
 const HttpError: any = {};
 
 const initialize = () => {
-    errors.forEach((e: IError) => {
-        HttpError[e.name] = (errDetail: string | IErrorDetail | null) => {
-            if (errDetail instanceof Object) {
-                return new CustomError(e.message, errDetail, e.statusCode);
-            } else {
-                const message: string = String(errDetail || 'WHOOPS');
-                return new CustomError(e.message, { type: message }, e.statusCode);
-            }
-        };
+    errors.forEach((e: IHttpError) => {
+        HttpError[e.name] = (message: string, name: string = 'WHOOPS', data: object) =>
+            new CustomError({
+                name,
+                message: `${e.message}${message ? `, ${message}` : ''}`,
+                status: e.statusCode,
+                data
+            });
     });
 };
 
