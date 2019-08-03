@@ -23,7 +23,7 @@ class CustomError extends Error {
 const HttpError = {};
 const initialize = () => {
     errors.forEach((e) => {
-        HttpError[e.name] = (name = 'WHOOPS', message, data) => new CustomError({
+        HttpError[e.name] = (message = null, name = 'WHOOPS', data) => new CustomError({
             name,
             message: `${e.message}${message ? `, ${message}` : ''}`,
             status: e.statusCode,

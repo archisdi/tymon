@@ -43,7 +43,7 @@ const HttpError: any = {};
 
 const initialize = () => {
     errors.forEach((e: IHttpError) => {
-        HttpError[e.name] = (name: string = 'WHOOPS', message: string, data: object) =>
+        HttpError[e.name] = (message: string | null = null, name: string = 'WHOOPS', data: object) =>
             new CustomError({
                 name,
                 message: `${e.message}${message ? `, ${message}` : ''}`,
