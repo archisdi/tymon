@@ -4,7 +4,8 @@
   "description": "nodejs common modules",
   "main": "index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "clean-install": "rm -rf node_modules package-lock.json && npm install"
   },
   "repository": {
     "type": "git",
@@ -16,6 +17,8 @@
     "typescript": "^3.5.2"
   },
   "dependencies": {
+    "@firebase/app": "^0.4.14",
+    "@firebase/app-types": "^0.4.3",
     "@types/elasticsearch": "^5.0.34",
     "@types/ioredis": "^4.0.13",
     "@types/mongodb": "^3.1.28",
