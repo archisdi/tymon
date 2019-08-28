@@ -21,7 +21,6 @@ const options = {
         acquire: 20000
     }
 };
-const basename = path.basename(__filename);
 let modelsInitialized = false;
 let models = null;
 exports.initialize = ({ connection_string, models_path }) => __awaiter(this, void 0, void 0, function* () {
@@ -68,13 +67,13 @@ exports.getTransaction = () => models.db_transaction;
 exports.commit = () => __awaiter(this, void 0, void 0, function* () {
     if (models && models.db_transaction) {
         yield models.db_transaction.commit();
-        exports.endTransaction();
+        yield exports.endTransaction();
     }
 });
 exports.rollback = () => __awaiter(this, void 0, void 0, function* () {
     if (models && models.db_transaction) {
         yield models.db_transaction.rollback();
-        exports.endTransaction();
+        yield exports.endTransaction();
     }
 });
 exports.closeContext = () => __awaiter(this, void 0, void 0, function* () {

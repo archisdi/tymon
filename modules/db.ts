@@ -21,7 +21,6 @@ const options: Options = {
     }
 };
 
-const basename: string = path.basename(__filename);
 let modelsInitialized: boolean = false;
 let models: instance = null;
 
@@ -77,14 +76,14 @@ export const getTransaction = (): any => models.db_transaction;
 export const commit = async (): Promise<void> => {
     if (models && models.db_transaction) {
         await models.db_transaction.commit();
-        endTransaction();
+        await endTransaction();
     }
 };
 
 export const rollback = async (): Promise<void> => {
     if (models && models.db_transaction) {
         await models.db_transaction.rollback();
-        endTransaction();
+        await endTransaction();
     }
 };
 
