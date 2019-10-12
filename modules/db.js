@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -23,7 +24,7 @@ const options = {
 };
 let modelsInitialized = false;
 let models = null;
-exports.initialize = ({ connection_string, models_path }) => __awaiter(this, void 0, void 0, function* () {
+exports.initialize = ({ connection_string, models_path }) => __awaiter(void 0, void 0, void 0, function* () {
     models = {};
     const sequelize = new sequelize_1.Sequelize(connection_string, options);
     const modelsDir = path.join(__dirname, '../../..', models_path);
@@ -46,13 +47,13 @@ exports.initialize = ({ connection_string, models_path }) => __awaiter(this, voi
     models.context = sequelize;
     modelsInitialized = true;
 });
-exports.getInstance = () => __awaiter(this, void 0, void 0, function* () {
+exports.getInstance = () => __awaiter(void 0, void 0, void 0, function* () {
     if (!modelsInitialized) {
         throw new Error('Not initialize');
     }
     return models;
 });
-exports.startTransaction = () => __awaiter(this, void 0, void 0, function* () {
+exports.startTransaction = () => __awaiter(void 0, void 0, void 0, function* () {
     if (!modelsInitialized) {
         throw new Error('Not initialize');
     }
@@ -60,23 +61,23 @@ exports.startTransaction = () => __awaiter(this, void 0, void 0, function* () {
         isolationLevel: models.ORMProvider.Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED
     });
 });
-exports.endTransaction = () => __awaiter(this, void 0, void 0, function* () {
+exports.endTransaction = () => __awaiter(void 0, void 0, void 0, function* () {
     models.db_transaction = null;
 });
 exports.getTransaction = () => models.db_transaction;
-exports.commit = () => __awaiter(this, void 0, void 0, function* () {
+exports.commit = () => __awaiter(void 0, void 0, void 0, function* () {
     if (models && models.db_transaction) {
         yield models.db_transaction.commit();
         yield exports.endTransaction();
     }
 });
-exports.rollback = () => __awaiter(this, void 0, void 0, function* () {
+exports.rollback = () => __awaiter(void 0, void 0, void 0, function* () {
     if (models && models.db_transaction) {
         yield models.db_transaction.rollback();
         yield exports.endTransaction();
     }
 });
-exports.closeContext = () => __awaiter(this, void 0, void 0, function* () {
+exports.closeContext = () => __awaiter(void 0, void 0, void 0, function* () {
     let result = null;
     if (models && models.context) {
         console.info('Closing - DBContext'); // tslint:disable-line
