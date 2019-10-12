@@ -10,7 +10,7 @@ interface IInstanceConfig {
 interface IFirebaseInput {
   db_url?: string;
   storage_url?: string;
-  service_account_path: string;
+  service_account_path?: string;
 }
 
 let instance: any;
