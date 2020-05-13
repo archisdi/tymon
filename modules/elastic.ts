@@ -4,7 +4,9 @@ interface IElasticInput {
     connection_string: string;
 }
 
-let instance: elasticsearch.Client;
+export type ElasticInstance =  elasticsearch.Client;
+
+let instance:ElasticInstance;
 
 const initialize = ({ connection_string }: IElasticInput): void => {
     if (!instance) {
@@ -14,7 +16,7 @@ const initialize = ({ connection_string }: IElasticInput): void => {
     }
 };
 
-const getInstance = (): elasticsearch.Client => {
+const getInstance = (): ElasticInstance => {
     if (!instance) {
         throw new Error('Not initialize');
     }

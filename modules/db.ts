@@ -4,24 +4,24 @@ import { Sequelize, ModelType } from 'sequelize';
 import { Options } from 'sequelize';
 import { Transaction } from 'sequelize';
 
-interface IDbInput {
+interface DBInput {
     connection_string: string;
     models_path: string;
 }
 
-interface InstanceType { 
-    model: any; 
+interface DBModel extends ModelType {
+    associate?: (models: DBModelCollection) => void
+}
+
+interface DBModelCollection { 
+    [s:string]: DBModel 
+}
+
+export interface DBInstance { 
+    model: DBModelCollection; 
     context: Sequelize; 
     ORMProvider: any; 
     db_transaction: Transaction | null; 
-}
-
-interface sequelizeModel extends ModelType {
-    associate?: (models: ModelCollection) => void
-}
-
-interface ModelCollection { 
-    [s:string]: sequelizeModel 
 }
 
 const options: Options = {
@@ -36,10 +36,10 @@ const options: Options = {
 };
 
 
-let instance: InstanceType | null ;
+let instance: DBInstance | null ;
 
-export const initialize = async ({ connection_string, models_path }: IDbInput): Promise<void> => {
-    const models: ModelCollection = {};
+export const initialize = async ({ connection_string, models_path }: DBInput): Promise<void> => {
+    const models: DBModelCollection = {};
     const sequelize = new Sequelize(connection_string, options);
 
     const modelsDir = path.join(__dirname, '../../..', models_path);
@@ -50,7 +50,7 @@ export const initialize = async ({ connection_string, models_path }: IDbInput): 
             return (file.indexOf('.') !== 0) && isEligible;
         })
         .forEach((file) => {
-            const model: sequelizeModel = sequelize.import(path.join(modelsDir, file));
+            const model: DBModel = sequelize.import(path.join(modelsDir, file));
             models[model.name] = model;
         });
 
@@ -69,15 +69,18 @@ export const initialize = async ({ connection_string, models_path }: IDbInput): 
     }
 };
 
-export const getInstance = async (): Promise<InstanceType> => {
+export const getInstance = async (): Promise<DBInstance> => {
     if (!instance) {
         throw new Error('Not initialize');
      }
     return instance;
 };
 
-export const getModel = (modelName: string): ModelType => {
-    return instance?.model[modelName];
+export const getModel = (modelName: string): DBModel => {
+    if (!instance) {
+        throw new Error('Not initialize');
+    }
+    return instance.model[modelName];
 }
 
 export const startTransaction = async (): Promise<void> => {

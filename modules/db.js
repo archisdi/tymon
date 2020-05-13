@@ -58,7 +58,10 @@ exports.getInstance = () => __awaiter(void 0, void 0, void 0, function* () {
     return instance;
 });
 exports.getModel = (modelName) => {
-    return instance === null || instance === void 0 ? void 0 : instance.model[modelName];
+    if (!instance) {
+        throw new Error('Not initialize');
+    }
+    return instance.model[modelName];
 };
 exports.startTransaction = () => __awaiter(void 0, void 0, void 0, function* () {
     if (!instance) {

@@ -1,23 +1,25 @@
 import * as firebase from 'firebase-admin';
 import * as path from 'path';
 
-interface IInstanceConfig {
+interface InstanceConfig {
   databaseURL?: string;
   storageBucket?: string;
   credential?: any;
 }
 
-interface IFirebaseInput {
+interface FirebaseInput {
   db_url?: string;
   storage_url?: string;
   service_account_path?: string;
 }
 
-let instance: firebase.app.App;
+export type FirebaseInstance = firebase.app.App;
 
-const initialize = (input: IFirebaseInput): void => {
+let instance: FirebaseInstance;
+
+const initialize = (input: FirebaseInput): void => {
   if (!instance) {
-      const config: IInstanceConfig = {
+      const config: InstanceConfig = {
         databaseURL: input.db_url,
         storageBucket: input.storage_url
       };
@@ -47,7 +49,7 @@ const initialize = (input: IFirebaseInput): void => {
   }
 };
 
-const getInstance = (): firebase.app.App => {
+const getInstance = (): FirebaseInstance => {
   if (!instance) {
     throw new Error('Not initialize');
   }

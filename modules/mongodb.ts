@@ -1,13 +1,15 @@
 import { MongoClient, Db } from 'mongodb';
 
-interface IMongoInput {
+interface MongoInput {
     connection_string: string;
     database: string;
 }
 
-let instance: Db;
+export type MongoInstance = Db;
 
-const initialize = async ({ connection_string, database }: IMongoInput): Promise<void> => {
+let instance: MongoInstance;
+
+const initialize = async ({ connection_string, database }: MongoInput): Promise<void> => {
     if (!instance) {
         instance = await MongoClient.connect(connection_string, { useNewUrlParser: true, useUnifiedTopology: true })
         .then((client) => client.db(database))
@@ -17,7 +19,7 @@ const initialize = async ({ connection_string, database }: IMongoInput): Promise
     }
 };
 
-const getInstance = (): Db => {
+const getInstance = (): MongoInstance => {
     if (!instance) {
         throw new Error('Not initialize');
     }
