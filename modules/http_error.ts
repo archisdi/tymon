@@ -1,11 +1,5 @@
 import * as StatusCode from 'http-status-codes';
 
-interface IHttpError {
-    name: string;
-    statusCode: number;
-    message: string;
-}
-
 interface ICustomError {
     message: string;
     name: string;

@@ -69,7 +69,7 @@ export const initialize = async ({ connection_string, models_path }: IDbInput): 
     }
 };
 
-export const getInstance = async (): Promise<any> => {
+export const getInstance = async (): Promise<InstanceType> => {
     if (!instance) {
         throw new Error('Not initialize');
      }
@@ -95,8 +95,8 @@ export const endTransaction = async (): Promise<void> => {
     }
 };
 
-export const getTransaction = (): any => {
-    if (!instance) {
+export const getTransaction = (): Transaction => {
+    if (!instance?.db_transaction) {
         throw new Error('No transaction set')
     }
     return instance.db_transaction;
