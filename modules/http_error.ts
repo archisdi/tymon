@@ -1,4 +1,4 @@
-import * as Err from 'http-status-codes';
+import * as StatusCode from 'http-status-codes';
 
 interface IHttpError {
     name: string;
@@ -9,50 +9,98 @@ interface IHttpError {
 interface ICustomError {
     message: string;
     name: string;
-    status: number;
-    data?: object | null | undefined;
+    http_status: number;
+    code?: string;
+    data?: any;
 }
 
-const errors = [
-    { name: 'BadRequest', statusCode: Err.BAD_REQUEST, message: 'Bad Request' },
-    { name: 'NotAuthorized', statusCode: Err.UNAUTHORIZED, message: 'Not Authorized' },
-    { name: 'Forbidden', statusCode: Err.FORBIDDEN, message: 'Forbidden' },
-    { name: 'NotFound', statusCode: Err.NOT_FOUND, message: 'Not Found' },
-    { name: 'UnprocessableEntity', statusCode: Err.UNPROCESSABLE_ENTITY, message: 'Unprocessable Entity' },
-    { name: 'TooManyRequests', statusCode: Err.TOO_MANY_REQUESTS, message: 'Too Many Requests' },
-    { name: 'InternalServerError', statusCode: Err.INTERNAL_SERVER_ERROR, message: 'Internal Server Error' }
-];
-
-class CustomError extends Error {
+export class HttpError extends Error {
     public message: string;
-    public status: number;
+    public httpStatus: number;
     public name: string;
-    public data: object | undefined;
+    public code: string;
+    public data: any;
 
-    constructor({ message, name, status, data }: ICustomError) {
+    constructor({ message, name, http_status, data, code }: ICustomError) {
         super(message);
         this.message = message;
-        this.status = status;
+        this.httpStatus = http_status;
         this.name = name;
+        this.code = code ? code : String(http_status)
         this.data = data ? data : undefined;
     }
 }
 
-// tslint:disable-next-line
-const HttpError: any = {};
+export const BadRequestError = (message: string, code?: string): HttpError => {
+    return new HttpError({
+        name: 'BadRequest',
+        message, 
+        http_status: StatusCode.BAD_REQUEST,
+        code
+    })
+}
 
-const initialize = () => {
-    errors.forEach((e: IHttpError) => {
-        HttpError[e.name] = (message: string | null = null, name: string = 'WHOOPS', data: object) =>
-            new CustomError({
-                name,
-                message: `${e.message}${message ? `, ${message}` : ''}`,
-                status: e.statusCode,
-                data
-            });
-    });
+export const UnauthorizedError = (message: string, code?: string): HttpError => {
+    return new HttpError({
+        name: 'Unauthorized',
+        message,
+        http_status: StatusCode.UNAUTHORIZED,
+        code
+    })
+}
+
+export const ForbiddenError = (message: string, code?: string): HttpError => {
+    return new HttpError({
+        name: 'Forbidden',
+        message,
+        http_status: StatusCode.FORBIDDEN,
+        code
+    })
+}
+
+export const NotFoundError = (message: string, code?: string): HttpError => {
+    return new HttpError({
+        name: 'NotFound',
+        message,
+        http_status: StatusCode.NOT_FOUND,
+        code
+    })
+}
+
+export const UnprocessableEntityError = (message: string, code?: string): HttpError => {
+    return new HttpError({
+        name: 'UnprocessableEntity',
+        message,
+        http_status: StatusCode.UNPROCESSABLE_ENTITY,
+        code
+    })
+}
+
+export const TooManyRequestsError = (message: string, code?: string): HttpError => {
+    return new HttpError({
+        name: 'TooManyRequests',
+        message,
+        http_status: StatusCode.TOO_MANY_REQUESTS,
+        code
+    })
+}
+
+export const InternalServerError = (message: string, code?: string): HttpError => {
+    return new HttpError({
+        name: 'InternalServerError',
+        message,
+        http_status: StatusCode.INTERNAL_SERVER_ERROR,
+        code
+    })
+}
+
+export default {
+    HttpError,
+    BadRequestError,
+    UnauthorizedError,
+    ForbiddenError,
+    NotFoundError,
+    UnprocessableEntityError,
+    TooManyRequestsError,
+    InternalServerError
 };
-
-HttpError.initialize = initialize;
-
-export default HttpError;
