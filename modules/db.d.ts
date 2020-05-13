@@ -4,6 +4,7 @@ interface IDbInput {
 }
 export declare const initialize: ({ connection_string, models_path }: IDbInput) => Promise<void>;
 export declare const getInstance: () => Promise<any>;
+export declare const getModel: (modelName: string) => typeof import("sequelize/types").Model;
 export declare const startTransaction: () => Promise<void>;
 export declare const endTransaction: () => Promise<void>;
 export declare const getTransaction: () => any;
@@ -13,6 +14,7 @@ export declare const closeContext: () => Promise<any>;
 declare const _default: {
     initialize: ({ connection_string, models_path }: IDbInput) => Promise<void>;
     getInstance: () => Promise<any>;
+    getModel: (modelName: string) => typeof import("sequelize/types").Model;
     startTransaction: () => Promise<void>;
     endTransaction: () => Promise<void>;
     getTransaction: () => any;

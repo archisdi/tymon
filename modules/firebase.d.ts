@@ -1,3 +1,4 @@
+import * as firebase from 'firebase-admin';
 interface IFirebaseInput {
     db_url?: string;
     storage_url?: string;
@@ -5,6 +6,6 @@ interface IFirebaseInput {
 }
 declare const _default: {
     initialize: (input: IFirebaseInput) => void;
-    getInstance: () => any;
+    getInstance: () => firebase.app.App;
 };
 export default _default;

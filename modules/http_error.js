@@ -1,35 +1,80 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Err = require("http-status-codes");
-const errors = [
-    { name: 'BadRequest', statusCode: Err.BAD_REQUEST, message: 'Bad Request' },
-    { name: 'NotAuthorized', statusCode: Err.UNAUTHORIZED, message: 'Not Authorized' },
-    { name: 'Forbidden', statusCode: Err.FORBIDDEN, message: 'Forbidden' },
-    { name: 'NotFound', statusCode: Err.NOT_FOUND, message: 'Not Found' },
-    { name: 'UnprocessableEntity', statusCode: Err.UNPROCESSABLE_ENTITY, message: 'Unprocessable Entity' },
-    { name: 'TooManyRequests', statusCode: Err.TOO_MANY_REQUESTS, message: 'Too Many Requests' },
-    { name: 'InternalServerError', statusCode: Err.INTERNAL_SERVER_ERROR, message: 'Internal Server Error' }
-];
-class CustomError extends Error {
-    constructor({ message, name, status, data }) {
+const StatusCode = require("http-status-codes");
+class HttpError extends Error {
+    constructor({ message, name, http_status, data, code }) {
         super(message);
         this.message = message;
-        this.status = status;
+        this.httpStatus = http_status;
         this.name = name;
+        this.code = code ? code : String(http_status);
         this.data = data ? data : undefined;
     }
 }
-// tslint:disable-next-line
-const HttpError = {};
-const initialize = () => {
-    errors.forEach((e) => {
-        HttpError[e.name] = (message = null, name = 'WHOOPS', data) => new CustomError({
-            name,
-            message: `${e.message}${message ? `, ${message}` : ''}`,
-            status: e.statusCode,
-            data
-        });
+exports.HttpError = HttpError;
+exports.BadRequestError = (message, code) => {
+    return new HttpError({
+        name: 'BadRequest',
+        message,
+        http_status: StatusCode.BAD_REQUEST,
+        code
     });
 };
-HttpError.initialize = initialize;
-exports.default = HttpError;
+exports.UnauthorizedError = (message, code) => {
+    return new HttpError({
+        name: 'Unauthorized',
+        message,
+        http_status: StatusCode.UNAUTHORIZED,
+        code
+    });
+};
+exports.ForbiddenError = (message, code) => {
+    return new HttpError({
+        name: 'Forbidden',
+        message,
+        http_status: StatusCode.FORBIDDEN,
+        code
+    });
+};
+exports.NotFoundError = (message, code) => {
+    return new HttpError({
+        name: 'NotFound',
+        message,
+        http_status: StatusCode.NOT_FOUND,
+        code
+    });
+};
+exports.UnprocessableEntityError = (message, code) => {
+    return new HttpError({
+        name: 'UnprocessableEntity',
+        message,
+        http_status: StatusCode.UNPROCESSABLE_ENTITY,
+        code
+    });
+};
+exports.TooManyRequestsError = (message, code) => {
+    return new HttpError({
+        name: 'TooManyRequests',
+        message,
+        http_status: StatusCode.TOO_MANY_REQUESTS,
+        code
+    });
+};
+exports.InternalServerError = (message, code) => {
+    return new HttpError({
+        name: 'InternalServerError',
+        message,
+        http_status: StatusCode.INTERNAL_SERVER_ERROR,
+        code
+    });
+};
+exports.default = {
+    HttpError,
+    BadRequestError: exports.BadRequestError,
+    UnauthorizedError: exports.UnauthorizedError,
+    ForbiddenError: exports.ForbiddenError,
+    NotFoundError: exports.NotFoundError,
+    UnprocessableEntityError: exports.UnprocessableEntityError,
+    TooManyRequestsError: exports.TooManyRequestsError,
+    InternalServerError: exports.InternalServerError
+};
