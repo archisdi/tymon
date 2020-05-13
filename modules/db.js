@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.closeContext = exports.rollback = exports.commit = exports.getTransaction = exports.endTransaction = exports.startTransaction = exports.getModel = exports.getInstance = exports.initialize = void 0;
 const fs = require("fs");
 const path = require("path");
 const sequelize_1 = require("sequelize");
@@ -73,7 +74,7 @@ exports.endTransaction = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getTransaction = () => {
-    if (!instance) {
+    if (!(instance === null || instance === void 0 ? void 0 : instance.db_transaction)) {
         throw new Error('No transaction set');
     }
     return instance.db_transaction;

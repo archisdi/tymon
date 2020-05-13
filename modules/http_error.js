@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.InternalServerError = exports.TooManyRequestsError = exports.UnprocessableEntityError = exports.NotFoundError = exports.ForbiddenError = exports.UnauthorizedError = exports.BadRequestError = exports.HttpError = void 0;
 const StatusCode = require("http-status-codes");
 class HttpError extends Error {
     constructor({ message, name, http_status, data, code }) {
