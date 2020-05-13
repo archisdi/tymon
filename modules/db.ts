@@ -98,11 +98,8 @@ export const endTransaction = async (): Promise<void> => {
     }
 };
 
-export const getTransaction = (): Transaction => {
-    if (!instance?.db_transaction) {
-        throw new Error('No transaction set')
-    }
-    return instance.db_transaction;
+export const getTransaction = (): Transaction | null => {
+    return instance?.db_transaction ? instance?.db_transaction : null;
 };
 
 export const commit = async (): Promise<void> => {

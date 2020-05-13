@@ -21,7 +21,7 @@ export declare const getInstance: () => Promise<DBInstance>;
 export declare const getModel: (modelName: string) => DBModel;
 export declare const startTransaction: () => Promise<void>;
 export declare const endTransaction: () => Promise<void>;
-export declare const getTransaction: () => Transaction;
+export declare const getTransaction: () => Transaction | null;
 export declare const commit: () => Promise<void>;
 export declare const rollback: () => Promise<void>;
 export declare const closeContext: () => Promise<any>;
@@ -31,7 +31,7 @@ declare const _default: {
     getModel: (modelName: string) => DBModel;
     startTransaction: () => Promise<void>;
     endTransaction: () => Promise<void>;
-    getTransaction: () => Transaction;
+    getTransaction: () => Transaction | null;
     commit: () => Promise<void>;
     rollback: () => Promise<void>;
     closeContext: () => Promise<any>;

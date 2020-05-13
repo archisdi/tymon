@@ -77,10 +77,7 @@ exports.endTransaction = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getTransaction = () => {
-    if (!(instance === null || instance === void 0 ? void 0 : instance.db_transaction)) {
-        throw new Error('No transaction set');
-    }
-    return instance.db_transaction;
+    return (instance === null || instance === void 0 ? void 0 : instance.db_transaction) ? instance === null || instance === void 0 ? void 0 : instance.db_transaction : null;
 };
 exports.commit = () => __awaiter(void 0, void 0, void 0, function* () {
     if (instance && instance.db_transaction) {
