@@ -13,7 +13,7 @@ interface IFirebaseInput {
   service_account_path?: string;
 }
 
-let instance: any;
+let instance: firebase.app.App;
 
 const initialize = (input: IFirebaseInput): void => {
   if (!instance) {
@@ -47,7 +47,7 @@ const initialize = (input: IFirebaseInput): void => {
   }
 };
 
-const getInstance = (): any => {
+const getInstance = (): firebase.app.App => {
   if (!instance) {
     throw new Error('Not initialize');
   }
