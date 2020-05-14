@@ -1,19 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getInstance = exports.initialize = void 0;
 const Redis = require("ioredis");
 let instance;
-const initialize = ({ connection_string }) => {
+exports.initialize = ({ connection_string }) => {
     if (!instance) {
         instance = new Redis(connection_string);
     }
 };
-const getInstance = () => {
+exports.getInstance = () => {
     if (!instance) {
         throw new Error('Not initialize');
     }
     return instance;
 };
 exports.default = {
-    initialize,
-    getInstance
+    initialize: exports.initialize,
+    getInstance: exports.getInstance
 };

@@ -1,14 +1,28 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Sequelize } from 'sequelize';
+import { Sequelize, ModelType } from 'sequelize';
 import { Options } from 'sequelize';
+import { Transaction } from 'sequelize';
 
-interface IDbInput {
+interface DBInput {
     connection_string: string;
     models_path: string;
 }
 
-type instance = any | null;
+interface DBModel extends ModelType {
+    associate?: (models: DBModelCollection) => void
+}
+
+interface DBModelCollection { 
+    [s:string]: DBModel 
+}
+
+export interface DBInstance { 
+    model: DBModelCollection; 
+    context: Sequelize; 
+    ORMProvider: any; 
+    db_transaction: Transaction | null; 
+}
 
 const options: Options = {
     dialect: 'mysql',
@@ -21,11 +35,11 @@ const options: Options = {
     }
 };
 
-let modelsInitialized: boolean = false;
-let models: instance = null;
 
-export const initialize = async ({ connection_string, models_path }: IDbInput): Promise<void> => {
-    models = {};
+let instance: DBInstance | null ;
+
+export const initialize = async ({ connection_string, models_path }: DBInput): Promise<void> => {
+    const models: DBModelCollection = {};
     const sequelize = new Sequelize(connection_string, options);
 
     const modelsDir = path.join(__dirname, '../../..', models_path);
@@ -36,53 +50,68 @@ export const initialize = async ({ connection_string, models_path }: IDbInput): 
             return (file.indexOf('.') !== 0) && isEligible;
         })
         .forEach((file) => {
-            const model = sequelize.import(path.join(modelsDir, file));
+            const model: DBModel = sequelize.import(path.join(modelsDir, file));
             models[model.name] = model;
         });
 
     Object.keys(models).forEach((modelName) => {
-        if (models[modelName].associate) {
-            models[modelName].associate(models);
+        const subModel = models[modelName];
+        if (subModel && subModel.associate) {
+            subModel.associate(models);
         }
     });
 
-    models.ORMProvider = Sequelize;
-    models.context = sequelize;
-    modelsInitialized = true;
+    instance = {
+        ORMProvider: Sequelize,
+        context: sequelize,
+        model: models,
+        db_transaction: null
+    }
 };
 
-export const getInstance = async (): Promise<instance> => {
-    if (!modelsInitialized) {
+export const getInstance = async (): Promise<DBInstance> => {
+    if (!instance) {
         throw new Error('Not initialize');
      }
-    return models;
+    return instance;
 };
+
+export const getModel = (modelName: string): DBModel => {
+    if (!instance) {
+        throw new Error('Not initialize');
+    }
+    return instance.model[modelName];
+}
 
 export const startTransaction = async (): Promise<void> => {
-    if (!modelsInitialized) {
+    if (!instance) {
         throw new Error('Not initialize');
      }
-    models.db_transaction = await models.context.transaction({
-        isolationLevel: models.ORMProvider.Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED
+    instance.db_transaction = await instance.context.transaction({
+        isolationLevel: instance.ORMProvider.Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED
     });
 };
 
 export const endTransaction = async (): Promise<void> => {
-    models.db_transaction = null;
+    if (instance) {
+        instance.db_transaction = null;
+    }
 };
 
-export const getTransaction = (): any => models.db_transaction;
+export const getTransaction = (): Transaction | null => {
+    return instance?.db_transaction ? instance?.db_transaction : null;
+};
 
 export const commit = async (): Promise<void> => {
-    if (models && models.db_transaction) {
-        await models.db_transaction.commit();
+    if (instance && instance.db_transaction) {
+        await instance.db_transaction.commit();
         await endTransaction();
     }
 };
 
 export const rollback = async (): Promise<void> => {
-    if (models && models.db_transaction) {
-        await models.db_transaction.rollback();
+    if (instance && instance.db_transaction) {
+        await instance.db_transaction.rollback();
         await endTransaction();
     }
 };
@@ -90,22 +119,22 @@ export const rollback = async (): Promise<void> => {
 export const closeContext = async (): Promise<any> => {
     let result = null;
 
-    if (models && models.context) {
+    if (instance && instance.context) {
         console.info('Closing - DBContext'); // tslint:disable-line
-        result = await models.context.close().catch((err: Error) => {
+        result = await instance.context.close().catch((err: Error) => {
             console.error(`Error Closing DBContext: ${err.stack}`); // tslint:disable-line
         });
         console.info('Closed - DBContext'); // tslint:disable-line
     }
 
-    models = null;
-    modelsInitialized = false;
+    instance = null;
     return result;
 };
 
 export default {
     initialize,
     getInstance,
+    getModel,
     startTransaction,
     endTransaction,
     getTransaction,

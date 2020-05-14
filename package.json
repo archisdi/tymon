@@ -14,7 +14,7 @@
   "author": "archie isdiningrat",
   "license": "ISC",
   "devDependencies": {
-    "typescript": "^3.5.2"
+    "typescript": "^3.9.2"
   },
   "dependencies": {
     "@firebase/app": "^0.4.14",
@@ -22,13 +22,13 @@
     "@types/elasticsearch": "^5.0.34",
     "@types/ioredis": "^4.0.13",
     "@types/mongodb": "^3.1.28",
-    "@types/sequelize": "^4.28.3",
+    "@types/sequelize": "^4.28.8",
     "elasticsearch": "^16.2.0",
     "firebase-admin": "^8.2.0",
     "http-status-codes": "^1.3.2",
     "ioredis": "^4.11.1",
     "mongodb": "^3.2.7",
     "mysql2": "^1.6.5",
-    "sequelize": "^5.10.0"
+    "sequelize": "^5.21.8"
   }
 }

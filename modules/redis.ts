@@ -4,15 +4,17 @@ interface IRedisInput {
     connection_string: string;
 }
 
-let instance: any;
+export type RedisInstance = Redis.Redis;
 
-const initialize = ({ connection_string }: IRedisInput): void => {
+let instance: RedisInstance;
+
+export const initialize = ({ connection_string }: IRedisInput): void => {
     if (!instance) {
         instance = new Redis(connection_string);
     }
 };
 
-const getInstance = (): any => {
+export const getInstance = (): RedisInstance => {
     if (!instance) {
         throw new Error('Not initialize');
     }
