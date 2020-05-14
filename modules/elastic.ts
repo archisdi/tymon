@@ -8,7 +8,7 @@ export type ElasticInstance =  elasticsearch.Client;
 
 let instance:ElasticInstance;
 
-const initialize = ({ connection_string }: IElasticInput): void => {
+export const initialize = ({ connection_string }: IElasticInput): void => {
     if (!instance) {
         instance = new elasticsearch.Client({
             hosts: [String(connection_string)]
@@ -16,7 +16,7 @@ const initialize = ({ connection_string }: IElasticInput): void => {
     }
 };
 
-const getInstance = (): ElasticInstance => {
+export const getInstance = (): ElasticInstance => {
     if (!instance) {
         throw new Error('Not initialize');
     }

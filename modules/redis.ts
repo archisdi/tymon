@@ -8,13 +8,13 @@ export type RedisInstance = Redis.Redis;
 
 let instance: RedisInstance;
 
-const initialize = ({ connection_string }: IRedisInput): void => {
+export const initialize = ({ connection_string }: IRedisInput): void => {
     if (!instance) {
         instance = new Redis(connection_string);
     }
 };
 
-const getInstance = (): RedisInstance => {
+export const getInstance = (): RedisInstance => {
     if (!instance) {
         throw new Error('Not initialize');
     }

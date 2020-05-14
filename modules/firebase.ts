@@ -17,7 +17,7 @@ export type FirebaseInstance = firebase.app.App;
 
 let instance: FirebaseInstance;
 
-const initialize = (input: FirebaseInput): void => {
+export const initialize = (input: FirebaseInput): void => {
   if (!instance) {
       const config: InstanceConfig = {
         databaseURL: input.db_url,
@@ -49,7 +49,7 @@ const initialize = (input: FirebaseInput): void => {
   }
 };
 
-const getInstance = (): FirebaseInstance => {
+export const getInstance = (): FirebaseInstance => {
   if (!instance) {
     throw new Error('Not initialize');
   }

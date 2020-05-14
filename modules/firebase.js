@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getInstance = exports.initialize = void 0;
 const firebase = require("firebase-admin");
 const path = require("path");
 let instance;
-const initialize = (input) => {
+exports.initialize = (input) => {
     if (!instance) {
         const config = {
             databaseURL: input.db_url,
@@ -30,13 +31,13 @@ const initialize = (input) => {
         instance = firebase.initializeApp(config);
     }
 };
-const getInstance = () => {
+exports.getInstance = () => {
     if (!instance) {
         throw new Error('Not initialize');
     }
     return instance;
 };
 exports.default = {
-    initialize,
-    getInstance
+    initialize: exports.initialize,
+    getInstance: exports.getInstance
 };

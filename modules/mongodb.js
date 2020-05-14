@@ -9,9 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getInstance = exports.initialize = void 0;
 const mongodb_1 = require("mongodb");
 let instance;
-const initialize = ({ connection_string, database }) => __awaiter(void 0, void 0, void 0, function* () {
+exports.initialize = ({ connection_string, database }) => __awaiter(void 0, void 0, void 0, function* () {
     if (!instance) {
         instance = yield mongodb_1.MongoClient.connect(connection_string, { useNewUrlParser: true, useUnifiedTopology: true })
             .then((client) => client.db(database))
@@ -20,13 +21,13 @@ const initialize = ({ connection_string, database }) => __awaiter(void 0, void 0
         });
     }
 });
-const getInstance = () => {
+exports.getInstance = () => {
     if (!instance) {
         throw new Error('Not initialize');
     }
     return instance;
 };
 exports.default = {
-    initialize,
-    getInstance
+    initialize: exports.initialize,
+    getInstance: exports.getInstance
 };
