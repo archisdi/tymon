@@ -98,8 +98,8 @@ export const endTransaction = async (): Promise<void> => {
     }
 };
 
-export const getTransaction = (): Transaction | null => {
-    return instance?.db_transaction ? instance?.db_transaction : null;
+export const getTransaction = (): Transaction | undefined => {
+    return instance?.db_transaction ? instance?.db_transaction : undefined;
 };
 
 export const commit = async (): Promise<void> => {
@@ -116,7 +116,7 @@ export const rollback = async (): Promise<void> => {
     }
 };
 
-export const closeContext = async (): Promise<any> => {
+export const closeContext = async (): Promise<void> => {
     let result = null;
 
     if (instance && instance.context) {
@@ -128,7 +128,6 @@ export const closeContext = async (): Promise<any> => {
     }
 
     instance = null;
-    return result;
 };
 
 export default {

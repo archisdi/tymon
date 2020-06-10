@@ -77,7 +77,7 @@ exports.endTransaction = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getTransaction = () => {
-    return (instance === null || instance === void 0 ? void 0 : instance.db_transaction) ? instance === null || instance === void 0 ? void 0 : instance.db_transaction : null;
+    return (instance === null || instance === void 0 ? void 0 : instance.db_transaction) ? instance === null || instance === void 0 ? void 0 : instance.db_transaction : undefined;
 };
 exports.commit = () => __awaiter(void 0, void 0, void 0, function* () {
     if (instance && instance.db_transaction) {
@@ -101,7 +101,6 @@ exports.closeContext = () => __awaiter(void 0, void 0, void 0, function* () {
         console.info('Closed - DBContext'); // tslint:disable-line
     }
     instance = null;
-    return result;
 });
 exports.default = {
     initialize: exports.initialize,
