@@ -69,7 +69,7 @@ export const initialize = async ({ connection_string, models_path }: DBInput): P
     }
 };
 
-export const getInstance = async (): Promise<DBInstance> => {
+export const getInstance = (): DBInstance => {
     if (!instance) {
         throw new Error('Not initialize');
      }

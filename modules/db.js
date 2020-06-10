@@ -51,12 +51,12 @@ exports.initialize = ({ connection_string, models_path }) => __awaiter(void 0, v
         db_transaction: null
     };
 });
-exports.getInstance = () => __awaiter(void 0, void 0, void 0, function* () {
+exports.getInstance = () => {
     if (!instance) {
         throw new Error('Not initialize');
     }
     return instance;
-});
+};
 exports.getModel = (modelName) => {
     if (!instance) {
         throw new Error('Not initialize');

@@ -17,7 +17,7 @@ export interface DBInstance {
     db_transaction: Transaction | null;
 }
 export declare const initialize: ({ connection_string, models_path }: DBInput) => Promise<void>;
-export declare const getInstance: () => Promise<DBInstance>;
+export declare const getInstance: () => DBInstance;
 export declare const getModel: (modelName: string) => DBModel;
 export declare const startTransaction: () => Promise<void>;
 export declare const endTransaction: () => Promise<void>;
@@ -27,7 +27,7 @@ export declare const rollback: () => Promise<void>;
 export declare const closeContext: () => Promise<void>;
 declare const _default: {
     initialize: ({ connection_string, models_path }: DBInput) => Promise<void>;
-    getInstance: () => Promise<DBInstance>;
+    getInstance: () => DBInstance;
     getModel: (modelName: string) => DBModel;
     startTransaction: () => Promise<void>;
     endTransaction: () => Promise<void>;
