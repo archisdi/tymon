@@ -1,6 +1,6 @@
 {
   "name": "tymon",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "nodejs common modules",
   "main": "index.js",
   "scripts": {
@@ -14,6 +14,9 @@
   "author": "archie isdiningrat",
   "license": "ISC",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^3.2.0",
+    "@typescript-eslint/parser": "^3.2.0",
+    "eslint": "^7.2.0",
     "typescript": "^3.9.2"
   },
   "dependencies": {

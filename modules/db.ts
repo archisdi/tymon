@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Sequelize, ModelType } from 'sequelize';
+import * as Sequelize from 'sequelize';
 import { Options } from 'sequelize';
 import { Transaction } from 'sequelize';
 
@@ -9,7 +9,7 @@ interface DBInput {
     models_path: string;
 }
 
-interface DBModel extends ModelType {
+interface DBModel extends Sequelize.ModelType {
     associate?: (models: DBModelCollection) => void
 }
 
@@ -19,8 +19,8 @@ interface DBModelCollection {
 
 export interface DBInstance { 
     model: DBModelCollection; 
-    context: Sequelize; 
-    ORMProvider: any; 
+    context: Sequelize.Sequelize; 
+    ORMProvider: typeof Sequelize; 
     db_transaction: Transaction | null; 
 }
 
@@ -36,108 +36,97 @@ const options: Options = {
 };
 
 
-let instance: DBInstance | null ;
+export class DBModule {
+    public static instance: DBInstance;
 
-export const initialize = async ({ connection_string, models_path }: DBInput): Promise<void> => {
-    const models: DBModelCollection = {};
-    const sequelize = new Sequelize(connection_string, options);
-
-    const modelsDir = path.join(__dirname, '../../..', models_path);
-    fs.readdirSync(modelsDir)
-        .filter((file) => {
-            const fileExtension: string = file.slice(-3);
-            const isEligible: boolean = (fileExtension === '.js' || fileExtension === '.ts');
-            return (file.indexOf('.') !== 0) && isEligible;
-        })
-        .forEach((file) => {
-            const model: DBModel = sequelize.import(path.join(modelsDir, file));
-            models[model.name] = model;
+    public static async initialize({ connection_string, models_path }: DBInput): Promise<void> {
+        const models: DBModelCollection = {};
+        const sequelize = new Sequelize.Sequelize(connection_string, options);
+    
+        const modelsDir = path.join(__dirname, '../../..', models_path);
+        fs.readdirSync(modelsDir)
+            .filter((file) => {
+                const fileExtension: string = file.slice(-3);
+                const isEligible: boolean = (fileExtension === '.js' || fileExtension === '.ts');
+                return (file.indexOf('.') !== 0) && isEligible;
+            })
+            .forEach((file) => {
+                const model: DBModel = sequelize.import(path.join(modelsDir, file));
+                models[model.name] = model;
+            });
+    
+        Object.keys(models).forEach((modelName) => {
+            const subModel = models[modelName];
+            if (subModel && subModel.associate) {
+                subModel.associate(models);
+            }
         });
-
-    Object.keys(models).forEach((modelName) => {
-        const subModel = models[modelName];
-        if (subModel && subModel.associate) {
-            subModel.associate(models);
+    
+        instance = {
+            ORMProvider: Sequelize,
+            context: sequelize,
+            model: models,
+            db_transaction: null
+        };
+    }
+    
+    public static getInstance(): DBInstance {
+        if (!instance) {
+            throw new Error('Not initialize');
         }
-    });
-
-    instance = {
-        ORMProvider: Sequelize,
-        context: sequelize,
-        model: models,
-        db_transaction: null
+        return instance;
     }
-};
-
-export const getInstance = (): DBInstance => {
-    if (!instance) {
-        throw new Error('Not initialize');
-     }
-    return instance;
-};
-
-export const getModel = (modelName: string): DBModel => {
-    if (!instance) {
-        throw new Error('Not initialize');
+    
+    public static getModel(modelName: string): DBModel {
+        if (!instance) {
+            throw new Error('Not initialize');
+        }
+        return this.instance.model[modelName];
     }
-    return instance.model[modelName];
+    
+    public static async startTransaction(): Promise<void> {
+        if (!instance) {
+            throw new Error('Not initialize');
+        }
+        this.instance.db_transaction = await this.instance.context.transaction({
+            isolationLevel: this.instance.ORMProvider.Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED
+        });
+    }
+    
+    public static async endTransaction(): Promise<void>{
+        if (instance) {
+            this.instance.db_transaction = null;
+        }
+    }
+    
+    public static getTransaction(): Transaction | undefined{
+        return instance?.db_transaction ? instance?.db_transaction : undefined;
+    }
+    
+    public static async commit(): Promise<void>{
+        if (instance && this.instance.db_transaction) {
+            await this.instance.db_transaction.commit();
+            await this.endTransaction();
+        }
+    }
+    
+    public static async rollback(): Promise<void>{
+        if (instance && this.instance.db_transaction) {
+            await this.instance.db_transaction.rollback();
+            await this.endTransaction();
+        }
+    }
+    
+    public static async closeContext(): Promise<void>{
+        if (instance && this.instance.context) {
+            console.info('Closing - DBContext'); // tslint:disable-line
+            await this.instance.context.close().catch((err: Error) => {
+                console.error(`Error Closing DBContext: ${err.stack}`); // tslint:disable-line
+            });
+            console.info('Closed - DBContext'); // tslint:disable-line
+        }
+        instance = null;
+    }
 }
 
-export const startTransaction = async (): Promise<void> => {
-    if (!instance) {
-        throw new Error('Not initialize');
-     }
-    instance.db_transaction = await instance.context.transaction({
-        isolationLevel: instance.ORMProvider.Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED
-    });
-};
-
-export const endTransaction = async (): Promise<void> => {
-    if (instance) {
-        instance.db_transaction = null;
-    }
-};
-
-export const getTransaction = (): Transaction | undefined => {
-    return instance?.db_transaction ? instance?.db_transaction : undefined;
-};
-
-export const commit = async (): Promise<void> => {
-    if (instance && instance.db_transaction) {
-        await instance.db_transaction.commit();
-        await endTransaction();
-    }
-};
-
-export const rollback = async (): Promise<void> => {
-    if (instance && instance.db_transaction) {
-        await instance.db_transaction.rollback();
-        await endTransaction();
-    }
-};
-
-export const closeContext = async (): Promise<void> => {
-    let result = null;
-
-    if (instance && instance.context) {
-        console.info('Closing - DBContext'); // tslint:disable-line
-        result = await instance.context.close().catch((err: Error) => {
-            console.error(`Error Closing DBContext: ${err.stack}`); // tslint:disable-line
-        });
-        console.info('Closed - DBContext'); // tslint:disable-line
-    }
-
-    instance = null;
-};
-
-export default {
-    initialize,
-    getInstance,
-    getModel,
-    startTransaction,
-    endTransaction,
-    getTransaction,
-    commit,
-    rollback,
-    closeContext
-};
+export default DBModule;
