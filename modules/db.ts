@@ -62,7 +62,7 @@ export class DBModule {
             }
         });
     
-        instance = {
+        this.instance = {
             ORMProvider: Sequelize,
             context: sequelize,
             model: models,
@@ -71,21 +71,21 @@ export class DBModule {
     }
     
     public static getInstance(): DBInstance {
-        if (!instance) {
+        if (!this.instance) {
             throw new Error('Not initialize');
         }
-        return instance;
+        return this.instance;
     }
     
     public static getModel(modelName: string): DBModel {
-        if (!instance) {
+        if (!this.instance) {
             throw new Error('Not initialize');
         }
         return this.instance.model[modelName];
     }
     
     public static async startTransaction(): Promise<void> {
-        if (!instance) {
+        if (!this.instance) {
             throw new Error('Not initialize');
         }
         this.instance.db_transaction = await this.instance.context.transaction({
@@ -94,38 +94,27 @@ export class DBModule {
     }
     
     public static async endTransaction(): Promise<void>{
-        if (instance) {
+        if (this.instance) {
             this.instance.db_transaction = null;
         }
     }
     
     public static getTransaction(): Transaction | undefined{
-        return instance?.db_transaction ? instance?.db_transaction : undefined;
+        return this.instance?.db_transaction ? this.instance.db_transaction : undefined;
     }
     
     public static async commit(): Promise<void>{
-        if (instance && this.instance.db_transaction) {
+        if (this.instance && this.instance.db_transaction) {
             await this.instance.db_transaction.commit();
             await this.endTransaction();
         }
     }
     
     public static async rollback(): Promise<void>{
-        if (instance && this.instance.db_transaction) {
+        if (this.instance.db_transaction) {
             await this.instance.db_transaction.rollback();
             await this.endTransaction();
         }
-    }
-    
-    public static async closeContext(): Promise<void>{
-        if (instance && this.instance.context) {
-            console.info('Closing - DBContext'); // tslint:disable-line
-            await this.instance.context.close().catch((err: Error) => {
-                console.error(`Error Closing DBContext: ${err.stack}`); // tslint:disable-line
-            });
-            console.info('Closed - DBContext'); // tslint:disable-line
-        }
-        instance = null;
     }
 }
 

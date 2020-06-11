@@ -9,10 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.closeContext = exports.rollback = exports.commit = exports.getTransaction = exports.endTransaction = exports.startTransaction = exports.getModel = exports.getInstance = exports.initialize = void 0;
+exports.DBModule = void 0;
 const fs = require("fs");
 const path = require("path");
-const sequelize_1 = require("sequelize");
+const Sequelize = require("sequelize");
 const options = {
     dialect: 'mysql',
     logging: process.env.NODE_ENV === 'production' ? false : console.log,
@@ -23,93 +23,85 @@ const options = {
         acquire: 20000
     }
 };
-let instance;
-exports.initialize = ({ connection_string, models_path }) => __awaiter(void 0, void 0, void 0, function* () {
-    const models = {};
-    const sequelize = new sequelize_1.Sequelize(connection_string, options);
-    const modelsDir = path.join(__dirname, '../../..', models_path);
-    fs.readdirSync(modelsDir)
-        .filter((file) => {
-        const fileExtension = file.slice(-3);
-        const isEligible = (fileExtension === '.js' || fileExtension === '.ts');
-        return (file.indexOf('.') !== 0) && isEligible;
-    })
-        .forEach((file) => {
-        const model = sequelize.import(path.join(modelsDir, file));
-        models[model.name] = model;
-    });
-    Object.keys(models).forEach((modelName) => {
-        const subModel = models[modelName];
-        if (subModel && subModel.associate) {
-            subModel.associate(models);
-        }
-    });
-    instance = {
-        ORMProvider: sequelize_1.Sequelize,
-        context: sequelize,
-        model: models,
-        db_transaction: null
-    };
-});
-exports.getInstance = () => {
-    if (!instance) {
-        throw new Error('Not initialize');
-    }
-    return instance;
-};
-exports.getModel = (modelName) => {
-    if (!instance) {
-        throw new Error('Not initialize');
-    }
-    return instance.model[modelName];
-};
-exports.startTransaction = () => __awaiter(void 0, void 0, void 0, function* () {
-    if (!instance) {
-        throw new Error('Not initialize');
-    }
-    instance.db_transaction = yield instance.context.transaction({
-        isolationLevel: instance.ORMProvider.Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED
-    });
-});
-exports.endTransaction = () => __awaiter(void 0, void 0, void 0, function* () {
-    if (instance) {
-        instance.db_transaction = null;
-    }
-});
-exports.getTransaction = () => {
-    return (instance === null || instance === void 0 ? void 0 : instance.db_transaction) ? instance === null || instance === void 0 ? void 0 : instance.db_transaction : undefined;
-};
-exports.commit = () => __awaiter(void 0, void 0, void 0, function* () {
-    if (instance && instance.db_transaction) {
-        yield instance.db_transaction.commit();
-        yield exports.endTransaction();
-    }
-});
-exports.rollback = () => __awaiter(void 0, void 0, void 0, function* () {
-    if (instance && instance.db_transaction) {
-        yield instance.db_transaction.rollback();
-        yield exports.endTransaction();
-    }
-});
-exports.closeContext = () => __awaiter(void 0, void 0, void 0, function* () {
-    let result = null;
-    if (instance && instance.context) {
-        console.info('Closing - DBContext'); // tslint:disable-line
-        result = yield instance.context.close().catch((err) => {
-            console.error(`Error Closing DBContext: ${err.stack}`); // tslint:disable-line
+class DBModule {
+    static initialize({ connection_string, models_path }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const models = {};
+            const sequelize = new Sequelize.Sequelize(connection_string, options);
+            const modelsDir = path.join(__dirname, '../../..', models_path);
+            fs.readdirSync(modelsDir)
+                .filter((file) => {
+                const fileExtension = file.slice(-3);
+                const isEligible = (fileExtension === '.js' || fileExtension === '.ts');
+                return (file.indexOf('.') !== 0) && isEligible;
+            })
+                .forEach((file) => {
+                const model = sequelize.import(path.join(modelsDir, file));
+                models[model.name] = model;
+            });
+            Object.keys(models).forEach((modelName) => {
+                const subModel = models[modelName];
+                if (subModel && subModel.associate) {
+                    subModel.associate(models);
+                }
+            });
+            this.instance = {
+                ORMProvider: Sequelize,
+                context: sequelize,
+                model: models,
+                db_transaction: null
+            };
         });
-        console.info('Closed - DBContext'); // tslint:disable-line
     }
-    instance = null;
-});
-exports.default = {
-    initialize: exports.initialize,
-    getInstance: exports.getInstance,
-    getModel: exports.getModel,
-    startTransaction: exports.startTransaction,
-    endTransaction: exports.endTransaction,
-    getTransaction: exports.getTransaction,
-    commit: exports.commit,
-    rollback: exports.rollback,
-    closeContext: exports.closeContext
-};
+    static getInstance() {
+        if (!this.instance) {
+            throw new Error('Not initialize');
+        }
+        return this.instance;
+    }
+    static getModel(modelName) {
+        if (!this.instance) {
+            throw new Error('Not initialize');
+        }
+        return this.instance.model[modelName];
+    }
+    static startTransaction() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.instance) {
+                throw new Error('Not initialize');
+            }
+            this.instance.db_transaction = yield this.instance.context.transaction({
+                isolationLevel: this.instance.ORMProvider.Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED
+            });
+        });
+    }
+    static endTransaction() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.instance) {
+                this.instance.db_transaction = null;
+            }
+        });
+    }
+    static getTransaction() {
+        var _a;
+        return ((_a = this.instance) === null || _a === void 0 ? void 0 : _a.db_transaction) ? this.instance.db_transaction : undefined;
+    }
+    static commit() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.instance && this.instance.db_transaction) {
+                yield this.instance.db_transaction.commit();
+                yield this.endTransaction();
+            }
+        });
+    }
+    static rollback() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.instance.db_transaction) {
+                yield this.instance.db_transaction.rollback();
+                yield this.endTransaction();
+            }
+        });
+    }
+}
+exports.DBModule = DBModule;
+exports.default = DBModule;
