@@ -37,7 +37,7 @@ const options: Options = {
 
 
 export class DBModule {
-    public static instance: DBInstance;
+    private static instance: DBInstance;
 
     public static async initialize({ connection_string, models_path }: DBInput): Promise<void> {
         const models: DBModelCollection = {};

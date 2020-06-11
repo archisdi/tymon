@@ -6,22 +6,22 @@ interface IRedisInput {
 
 export type RedisInstance = Redis.Redis;
 
-let instance: RedisInstance;
 
-export const initialize = ({ connection_string }: IRedisInput): void => {
-    if (!instance) {
-        instance = new Redis(connection_string);
+export class RedisModule {
+    private static instance: RedisInstance;
+
+    public static initialize({ connection_string }: IRedisInput): void {
+        if (!this.instance) {
+            this.instance = new Redis(connection_string);
+        }
     }
-};
-
-export const getInstance = (): RedisInstance => {
-    if (!instance) {
-        throw new Error('Not initialize');
+    
+    public static getInstance(): RedisInstance {
+        if (!this.instance) {
+            throw new Error('Not initialize');
+        }
+        return this.instance;
     }
-    return instance;
-};
+}
 
-export default {
-    initialize,
-    getInstance
-};
+export default RedisModule;
