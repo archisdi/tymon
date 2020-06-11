@@ -4,7 +4,7 @@ import * as Sequelize from 'sequelize';
 import { Options } from 'sequelize';
 import { Transaction } from 'sequelize';
 
-interface DBInput {
+interface DBOpts {
     connection_string: string;
     models_path: string;
 }
@@ -39,7 +39,7 @@ const options: Options = {
 export class DBModule {
     private static instance: DBInstance;
 
-    public static async initialize({ connection_string, models_path }: DBInput): Promise<void> {
+    public static async initialize({ connection_string, models_path }: DBOpts): Promise<void> {
         const models: DBModelCollection = {};
         const sequelize = new Sequelize.Sequelize(connection_string, options);
     

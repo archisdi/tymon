@@ -1,16 +1,15 @@
 import * as Redis from 'ioredis';
 
-interface IRedisInput {
+interface IRedisOpts {
     connection_string: string;
 }
 
 export type RedisInstance = Redis.Redis;
 
-
 export class RedisModule {
     private static instance: RedisInstance;
 
-    public static initialize({ connection_string }: IRedisInput): void {
+    public static initialize({ connection_string }: IRedisOpts): void {
         if (!this.instance) {
             this.instance = new Redis(connection_string);
         }

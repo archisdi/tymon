@@ -20,7 +20,7 @@ export class HttpError extends Error {
         this.message = message;
         this.httpStatus = http_status;
         this.name = name;
-        this.code = code ? code : String(http_status)
+        this.code = code ? code : String(http_status);
         this.data = data ? data : undefined;
     }
 }
@@ -31,8 +31,8 @@ export const BadRequestError = (message: string, code?: string): HttpError => {
         message, 
         http_status: StatusCode.BAD_REQUEST,
         code
-    })
-}
+    });
+};
 
 export const UnauthorizedError = (message: string, code?: string): HttpError => {
     return new HttpError({
@@ -40,8 +40,8 @@ export const UnauthorizedError = (message: string, code?: string): HttpError => 
         message,
         http_status: StatusCode.UNAUTHORIZED,
         code
-    })
-}
+    });
+};
 
 export const ForbiddenError = (message: string, code?: string): HttpError => {
     return new HttpError({
@@ -49,8 +49,8 @@ export const ForbiddenError = (message: string, code?: string): HttpError => {
         message,
         http_status: StatusCode.FORBIDDEN,
         code
-    })
-}
+    });
+};
 
 export const NotFoundError = (message: string, code?: string): HttpError => {
     return new HttpError({
@@ -58,8 +58,8 @@ export const NotFoundError = (message: string, code?: string): HttpError => {
         message,
         http_status: StatusCode.NOT_FOUND,
         code
-    })
-}
+    });
+};
 
 export const UnprocessableEntityError = (message: string, code?: string): HttpError => {
     return new HttpError({
@@ -67,8 +67,8 @@ export const UnprocessableEntityError = (message: string, code?: string): HttpEr
         message,
         http_status: StatusCode.UNPROCESSABLE_ENTITY,
         code
-    })
-}
+    });
+};
 
 export const TooManyRequestsError = (message: string, code?: string): HttpError => {
     return new HttpError({
@@ -76,8 +76,8 @@ export const TooManyRequestsError = (message: string, code?: string): HttpError 
         message,
         http_status: StatusCode.TOO_MANY_REQUESTS,
         code
-    })
-}
+    });
+};
 
 export const InternalServerError = (message: string, code?: string): HttpError => {
     return new HttpError({
@@ -85,8 +85,8 @@ export const InternalServerError = (message: string, code?: string): HttpError =
         message,
         http_status: StatusCode.INTERNAL_SERVER_ERROR,
         code
-    })
-}
+    });
+};
 
 export default {
     HttpError,

@@ -4,10 +4,10 @@ import * as path from 'path';
 interface InstanceConfig {
   databaseURL?: string;
   storageBucket?: string;
-  credential?: any;
+  credential?: firebase.credential.Credential;
 }
 
-interface FirebaseInput {
+interface FirebaseOpts {
   db_url?: string;
   storage_url?: string;
   service_account_path?: string;
@@ -15,48 +15,47 @@ interface FirebaseInput {
 
 export type FirebaseInstance = firebase.app.App;
 
-let instance: FirebaseInstance;
+export class FirebaseModule {
+  public static instance: FirebaseInstance;
 
-export const initialize = (input: FirebaseInput): void => {
-  if (!instance) {
-      const config: InstanceConfig = {
-        databaseURL: input.db_url,
-        storageBucket: input.storage_url
-      };
+  public static initialize(input: FirebaseOpts): void {
+      if (!this.instance) {
+          const config: InstanceConfig = {
+              databaseURL: input.db_url,
+              storageBucket: input.storage_url
+          };
 
-      // load cred if passed
-      if (input.service_account_path) {
-        const filePath: string = path.join(__dirname, '../../..', input.service_account_path);
-        const serviceAccount = require(filePath);
+          // load cred if passed
+          if (input.service_account_path) {
+              const filePath: string = path.join(__dirname, '../../..', input.service_account_path);
+              const serviceAccount: { [s:string]: string } = require(filePath);
 
-        const params = {
-          type: ( serviceAccount as any).type,
-          projectId: ( serviceAccount as any).project_id,
-          privateKeyId: ( serviceAccount as any).private_key_id,
-          privateKey: ( serviceAccount as any).private_key,
-          clientEmail: ( serviceAccount as any).client_email,
-          clientId: ( serviceAccount as any).client_id,
-          authUri: ( serviceAccount as any).auth_uri,
-          tokenUri: ( serviceAccount as any).token_uri,
-          authProviderX509CertUrl: ( serviceAccount as any).auth_provider_x509_cert_url,
-          clientC509CertUrl: ( serviceAccount as any).client_x509_cert_url
-        };
+              const params = {
+                  type: serviceAccount.type,
+                  projectId: serviceAccount.project_id,
+                  privateKeyId: serviceAccount.private_key_id,
+                  privateKey: serviceAccount.private_key,
+                  clientEmail: serviceAccount.client_email,
+                  clientId: serviceAccount.client_id,
+                  authUri: serviceAccount.auth_uri,
+                  tokenUri: serviceAccount.token_uri,
+                  authProviderX509CertUrl: serviceAccount.auth_provider_x509_cert_url,
+                  clientC509CertUrl: serviceAccount.client_x509_cert_url
+              };
 
-        config.credential = firebase.credential.cert(params);
+              config.credential = firebase.credential.cert(params);
+          }
+
+          this.instance = firebase.initializeApp(config);
       }
-
-      instance = firebase.initializeApp(config);
   }
-};
 
-export const getInstance = (): FirebaseInstance => {
-  if (!instance) {
-    throw new Error('Not initialize');
+  public static getInstance(): FirebaseInstance {
+      if (!this.instance) {
+          throw new Error('Not initialize');
+      }
+      return this.instance;
   }
-  return instance;
-};
+}
 
-export default {
-  initialize,
-  getInstance
-};
+export default FirebaseModule;
