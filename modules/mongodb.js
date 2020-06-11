@@ -9,25 +9,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getInstance = exports.initialize = void 0;
+exports.MongodbModule = void 0;
 const mongodb_1 = require("mongodb");
-let instance;
-exports.initialize = ({ connection_string, database }) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!instance) {
-        instance = yield mongodb_1.MongoClient.connect(connection_string, { useNewUrlParser: true, useUnifiedTopology: true })
-            .then((client) => client.db(database))
-            .catch((err) => {
-            throw new Error(`fail initializing mongodb connection, ${err.message}`);
+class MongodbModule {
+    static initialize({ connection_string, database }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.instance) {
+                this.instance = yield mongodb_1.MongoClient.connect(connection_string, { useNewUrlParser: true, useUnifiedTopology: true })
+                    .then((client) => client.db(database))
+                    .catch((err) => {
+                    throw new Error(`fail initializing mongodb connection, ${err.message}`);
+                });
+            }
         });
     }
-});
-exports.getInstance = () => {
-    if (!instance) {
-        throw new Error('Not initialize');
+    static getInstance() {
+        if (!this.instance) {
+            throw new Error('Not initialize');
+        }
+        return this.instance;
     }
-    return instance;
-};
-exports.default = {
-    initialize: exports.initialize,
-    getInstance: exports.getInstance
-};
+}
+exports.MongodbModule = MongodbModule;
+exports.default = MongodbModule;

@@ -1,13 +1,12 @@
 import { Db } from 'mongodb';
-interface MongoInput {
+interface MongoOpts {
     connection_string: string;
     database: string;
 }
 export declare type MongoInstance = Db;
-export declare const initialize: ({ connection_string, database }: MongoInput) => Promise<void>;
-export declare const getInstance: () => MongoInstance;
-declare const _default: {
-    initialize: ({ connection_string, database }: MongoInput) => Promise<void>;
-    getInstance: () => Db;
-};
-export default _default;
+export declare class MongodbModule {
+    static instance: MongoInstance;
+    static initialize({ connection_string, database }: MongoOpts): Promise<void>;
+    static getInstance(): MongoInstance;
+}
+export default MongodbModule;

@@ -1,29 +1,28 @@
 import * as elasticsearch from 'elasticsearch';
 
-interface IElasticInput {
+interface IElasticOpts {
     connection_string: string;
 }
 
 export type ElasticInstance =  elasticsearch.Client;
 
-let instance:ElasticInstance;
+export class ElasticsearchModule {
+    public static instance: ElasticInstance;
 
-export const initialize = ({ connection_string }: IElasticInput): void => {
-    if (!instance) {
-        instance = new elasticsearch.Client({
-            hosts: [String(connection_string)]
-        });
+    public static initialize({ connection_string }: IElasticOpts): void {
+        if (!this.instance) {
+            this.instance = new elasticsearch.Client({
+                hosts: [String(connection_string)]
+            });
+        }
     }
-};
-
-export const getInstance = (): ElasticInstance => {
-    if (!instance) {
-        throw new Error('Not initialize');
+    
+    public static getInstance(): ElasticInstance {
+        if (!this.instance) {
+            throw new Error('Not initialize');
+        }
+        return this.instance;
     }
-    return instance;
-};
+}
 
-export default {
-    initialize,
-    getInstance
-};
+export default ElasticsearchModule;

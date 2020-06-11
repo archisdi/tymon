@@ -1,12 +1,11 @@
 import * as elasticsearch from 'elasticsearch';
-interface IElasticInput {
+interface IElasticOpts {
     connection_string: string;
 }
 export declare type ElasticInstance = elasticsearch.Client;
-export declare const initialize: ({ connection_string }: IElasticInput) => void;
-export declare const getInstance: () => ElasticInstance;
-declare const _default: {
-    initialize: ({ connection_string }: IElasticInput) => void;
-    getInstance: () => elasticsearch.Client;
-};
-export default _default;
+export declare class ElasticsearchModule {
+    static instance: ElasticInstance;
+    static initialize({ connection_string }: IElasticOpts): void;
+    static getInstance(): ElasticInstance;
+}
+export default ElasticsearchModule;

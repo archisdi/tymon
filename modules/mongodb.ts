@@ -1,32 +1,31 @@
 import { MongoClient, Db } from 'mongodb';
 
-interface MongoInput {
+interface MongoOpts {
     connection_string: string;
     database: string;
 }
 
 export type MongoInstance = Db;
 
-let instance: MongoInstance;
+export class MongodbModule {
+    public static instance: MongoInstance;
 
-export const initialize = async ({ connection_string, database }: MongoInput): Promise<void> => {
-    if (!instance) {
-        instance = await MongoClient.connect(connection_string, { useNewUrlParser: true, useUnifiedTopology: true })
-        .then((client) => client.db(database))
-        .catch((err) => {
-            throw new Error(`fail initializing mongodb connection, ${err.message}`);
-        });
+    public static  async initialize({ connection_string, database }: MongoOpts): Promise<void>{
+        if (!this.instance) {
+            this.instance = await MongoClient.connect(connection_string, { useNewUrlParser: true, useUnifiedTopology: true })
+                .then((client) => client.db(database))
+                .catch((err) => {
+                    throw new Error(`fail initializing mongodb connection, ${err.message}`);
+                });
+        }
     }
-};
-
-export const getInstance = (): MongoInstance => {
-    if (!instance) {
-        throw new Error('Not initialize');
+    
+    public static getInstance(): MongoInstance {
+        if (!this.instance) {
+            throw new Error('Not initialize');
+        }
+        return this.instance;
     }
-    return instance;
-};
+}
 
-export default {
-    initialize,
-    getInstance
-};
+export default MongodbModule;

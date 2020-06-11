@@ -1,6 +1,6 @@
 import * as Sequelize from 'sequelize';
 import { Transaction } from 'sequelize';
-interface DBInput {
+interface DBOpts {
     connection_string: string;
     models_path: string;
 }
@@ -17,8 +17,8 @@ export interface DBInstance {
     db_transaction: Transaction | null;
 }
 export declare class DBModule {
-    static instance: DBInstance;
-    static initialize({ connection_string, models_path }: DBInput): Promise<void>;
+    private static instance;
+    static initialize({ connection_string, models_path }: DBOpts): Promise<void>;
     static getInstance(): DBInstance;
     static getModel(modelName: string): DBModel;
     static startTransaction(): Promise<void>;

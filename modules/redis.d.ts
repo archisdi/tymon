@@ -1,12 +1,11 @@
 import * as Redis from 'ioredis';
-interface IRedisInput {
+interface IRedisOpts {
     connection_string: string;
 }
 export declare type RedisInstance = Redis.Redis;
-export declare const initialize: ({ connection_string }: IRedisInput) => void;
-export declare const getInstance: () => RedisInstance;
-declare const _default: {
-    initialize: ({ connection_string }: IRedisInput) => void;
-    getInstance: () => Redis.Redis;
-};
-export default _default;
+export declare class RedisModule {
+    private static instance;
+    static initialize({ connection_string }: IRedisOpts): void;
+    static getInstance(): RedisInstance;
+}
+export default RedisModule;
