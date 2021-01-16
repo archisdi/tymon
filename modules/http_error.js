@@ -13,7 +13,7 @@ class HttpError extends Error {
     }
 }
 exports.HttpError = HttpError;
-exports.BadRequestError = (message, code) => {
+const BadRequestError = (message, code) => {
     return new HttpError({
         name: 'BadRequest',
         message,
@@ -21,7 +21,8 @@ exports.BadRequestError = (message, code) => {
         code
     });
 };
-exports.UnauthorizedError = (message, code) => {
+exports.BadRequestError = BadRequestError;
+const UnauthorizedError = (message, code) => {
     return new HttpError({
         name: 'Unauthorized',
         message,
@@ -29,7 +30,8 @@ exports.UnauthorizedError = (message, code) => {
         code
     });
 };
-exports.ForbiddenError = (message, code) => {
+exports.UnauthorizedError = UnauthorizedError;
+const ForbiddenError = (message, code) => {
     return new HttpError({
         name: 'Forbidden',
         message,
@@ -37,7 +39,8 @@ exports.ForbiddenError = (message, code) => {
         code
     });
 };
-exports.NotFoundError = (message, code) => {
+exports.ForbiddenError = ForbiddenError;
+const NotFoundError = (message, code) => {
     return new HttpError({
         name: 'NotFound',
         message,
@@ -45,7 +48,8 @@ exports.NotFoundError = (message, code) => {
         code
     });
 };
-exports.UnprocessableEntityError = (message, code) => {
+exports.NotFoundError = NotFoundError;
+const UnprocessableEntityError = (message, code) => {
     return new HttpError({
         name: 'UnprocessableEntity',
         message,
@@ -53,7 +57,8 @@ exports.UnprocessableEntityError = (message, code) => {
         code
     });
 };
-exports.TooManyRequestsError = (message, code) => {
+exports.UnprocessableEntityError = UnprocessableEntityError;
+const TooManyRequestsError = (message, code) => {
     return new HttpError({
         name: 'TooManyRequests',
         message,
@@ -61,7 +66,8 @@ exports.TooManyRequestsError = (message, code) => {
         code
     });
 };
-exports.InternalServerError = (message, code) => {
+exports.TooManyRequestsError = TooManyRequestsError;
+const InternalServerError = (message, code) => {
     return new HttpError({
         name: 'InternalServerError',
         message,
@@ -69,6 +75,7 @@ exports.InternalServerError = (message, code) => {
         code
     });
 };
+exports.InternalServerError = InternalServerError;
 exports.default = {
     HttpError,
     BadRequestError: exports.BadRequestError,

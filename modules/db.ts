@@ -7,6 +7,7 @@ import { Transaction } from 'sequelize';
 interface DBOpts {
     connection_string: string;
     models_path: string;
+    options?: Options;
 }
 
 interface DBModel extends Sequelize.ModelType {
@@ -24,7 +25,7 @@ export interface DBInstance {
     db_transaction: Transaction | null; 
 }
 
-const options: Options = {
+const opts: Options = {
     dialect: 'mysql',
     logging: process.env.NODE_ENV === 'production' ? false : console.log, // tslint:disable-line
     pool: {
@@ -35,13 +36,12 @@ const options: Options = {
     }
 };
 
-
 export class DBModule {
     private static instance: DBInstance;
 
-    public static async initialize({ connection_string, models_path }: DBOpts): Promise<void> {
+    public static async initialize({ connection_string, models_path, options }: DBOpts): Promise<void> {
         const models: DBModelCollection = {};
-        const sequelize = new Sequelize.Sequelize(connection_string, options);
+        const sequelize = new Sequelize.Sequelize(connection_string, { ...opts, ...options});
     
         const modelsDir = path.join(__dirname, '../../..', models_path);
         fs.readdirSync(modelsDir)

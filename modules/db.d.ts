@@ -1,8 +1,10 @@
 import * as Sequelize from 'sequelize';
+import { Options } from 'sequelize';
 import { Transaction } from 'sequelize';
 interface DBOpts {
     connection_string: string;
     models_path: string;
+    options?: Options;
 }
 interface DBModel extends Sequelize.ModelType {
     associate?: (models: DBModelCollection) => void;
@@ -18,7 +20,7 @@ export interface DBInstance {
 }
 export declare class DBModule {
     private static instance;
-    static initialize({ connection_string, models_path }: DBOpts): Promise<void>;
+    static initialize({ connection_string, models_path, options }: DBOpts): Promise<void>;
     static getInstance(): DBInstance;
     static getModel(modelName: string): DBModel;
     static startTransaction(): Promise<void>;

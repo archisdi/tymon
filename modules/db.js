@@ -13,7 +13,7 @@ exports.DBModule = void 0;
 const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
-const options = {
+const opts = {
     dialect: 'mysql',
     logging: process.env.NODE_ENV === 'production' ? false : console.log,
     pool: {
@@ -24,10 +24,10 @@ const options = {
     }
 };
 class DBModule {
-    static initialize({ connection_string, models_path }) {
+    static initialize({ connection_string, models_path, options }) {
         return __awaiter(this, void 0, void 0, function* () {
             const models = {};
-            const sequelize = new Sequelize.Sequelize(connection_string, options);
+            const sequelize = new Sequelize.Sequelize(connection_string, Object.assign(Object.assign({}, opts), options));
             const modelsDir = path.join(__dirname, '../../..', models_path);
             fs.readdirSync(modelsDir)
                 .filter((file) => {
